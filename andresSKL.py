@@ -57,8 +57,7 @@ def crossval(estimator, data, cv):
   print("Scores:")
   for metric in scoring:
     met_key = 'test_' + metric
-    print(f"{metric}: {scores[met_key].mean():.2f} accuracy with a standard deviation \ 
-of {scores[met_key].std():.2f}\n")
+    print(f"{metric}: {scores[met_key].mean():.2f} accuracy with a standard deviation of {scores[met_key].std():.2f}\n")
   return
 
 ''' Hyperparameter Grid Search '''
