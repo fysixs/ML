@@ -149,10 +149,11 @@ def plot_feature_importance(estimator, data):
 
 ''' Plotting Learning Curves '''
 def plot_learning_curves(estimator, train_num, data, cv):
-  train_sizes, train_scores, test_scores = \
-        learning_curve(estimator, data.X_train, data.y_train,
-                       cv=cv, n_jobs=-1,
-                       train_sizes=np.linspace(.1, 1.0, train_num))
+  (train_sizes, train_scores, 
+   test_scores) = learning_curve(estimator,
+                                 data.X_train, data.y_train,
+                                 cv=cv, n_jobs=-1,
+                                 train_sizes=np.linspace(.1, 1.0, train_num))
         
   data = {'train_scores_mean': np.mean(train_scores, axis=1),
           'train_scores_std' : np.std(train_scores, axis=1),
@@ -186,11 +187,10 @@ def plot_learning_curves(estimator, train_num, data, cv):
 
 ''' Plotting Validation Curves '''
 def plot_val_curves(estimator, param_dict, scoring, data, cv):
-  train_scores, test_scores = \ 
-        validation_curve(estimator, data.X_train, data.y_train,
-                         param_name=param_dict['param_name'],
-                         param_range=param_dict['param_range'],
-                         scoring=scoring, n_jobs=-1)
+  train_scores, test_scores =  validation_curve(estimator, data.X_train, data.y_train,
+                                                param_name=param_dict['param_name'],
+                                                param_range=param_dict['param_range'],
+                                                scoring=scoring, n_jobs=-1)
   
   train_scores_mean = np.mean(train_scores, axis=1)
   train_scores_std  = np.std(train_scores, axis=1)
