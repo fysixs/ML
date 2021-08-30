@@ -106,7 +106,7 @@ def model_score(params, data, clf):
 
 ''' -------- VISUALIZATION --------- '''
 ''' Plot Distributions '''
-def distplot(data, bins=10, title):
+def distplot(data, title, bins=10):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
@@ -142,7 +142,7 @@ def plot_model_variance(estimator, data, scoring, bins, train=True):
   scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
   
   title = f"{type(estimator).__name__}'s {scoring} score variance"
-  distplot(scores, bins=bins, title)
+  distplot(scores, title, bins=bins)
   return
 
 ''' Plot Feature Importance '''
