@@ -112,7 +112,8 @@ def distplot(data, bins=10):
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
   
-  p = figure(title='Model Score Variance', tools='', background_fill_color="#fafafa")
+  p = figure(plot_width=300, plot_height=300, title="Model Score Variance",
+             tools='', background_fill_color="#fafafa")
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
           fill_color="navy", line_color="white", alpha=0.5)
   p.line(x, pdf, line_color="#ff8888", line_width=4, alpha=0.7)
