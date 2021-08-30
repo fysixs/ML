@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 
 # Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
-from bokeh.models import TickFormatter
 
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
@@ -170,9 +169,11 @@ def plot_feature_importance(estimator, data):
   label_dict = {}
   for i, s in enumerate(f_names):
     label_dict[i] = s
-
-  p.xaxis.formatter = TickFormatter(labels=label_dict)
-  p.xaxis.major_label_orientation = pi/4
+  
+  
+  p.xaxis.major_label_overrides = label_dict
+  p.xaxis.major_label_orientation = np.pi/4
+  p.xaxis.ticker = list(label_dict.keys())
 
   show(p)
   return
