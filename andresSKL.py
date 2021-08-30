@@ -15,6 +15,8 @@ output_notebook()
 pandas_bokeh.output_notebook()
 pd.set_option('plotting.backend', 'pandas_bokeh')
 
+from sklearn.model_selection import train_test_split
+
 ''' OOP '''
 class ModelData:
   def __init__(self, raw_data, test_size=0.2):
