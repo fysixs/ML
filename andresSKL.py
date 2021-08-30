@@ -2,10 +2,6 @@
 #<--------- Andres Cardenas, 2021 ------>
 
 ''' IMPORTS '''
-
-%shell pip install pandas-bokeh
-%shell pip install --upgrade scikit-learn
-
 import numpy as np
 import pandas as pd
 import pandas_bokeh
