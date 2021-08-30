@@ -106,7 +106,7 @@ def model_score(params, data, clf):
 
 ''' -------- VISUALIZATION --------- '''
 ''' Plot Distributions '''
-def distplot(data, bins=10):
+def distplot(data, bins=10, title):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
@@ -116,7 +116,7 @@ def distplot(data, bins=10):
              background_fill_color="#fafafa")
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
-  p.title = 'Model Variance'  
+  p.title = title  
 
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
           fill_color="navy", line_color="white", alpha=0.5)
@@ -131,7 +131,7 @@ def distplot(data, bins=10):
   return
 
 ''' Model Variance '''
-def plot_model_variance(estimator, data, train=True):
+def plot_model_variance(estimator, data, scoring, bins, train=True):
   sss_split = StratifiedShuffleSplit(n_splits = 100 , test_size=0.75)
   if train==True:
     X = data.X_train
@@ -139,8 +139,10 @@ def plot_model_variance(estimator, data, train=True):
   else:
     X = data.X_test
     y = data.y_test
-  scores = cross_val_score(estimator, X, y, scoring='f1', cv=sss_split)
-  distplot(scores, bins=15)
+  scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
+  
+  title = f"{type(estimator).__name__}'s {scoring} score variance"}
+  distplot(scores, bins=bins, title)
   return
 
 ''' Plot Feature Importance '''
