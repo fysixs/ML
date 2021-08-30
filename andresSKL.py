@@ -109,14 +109,16 @@ def model_score(params, data, clf):
 def distplot(data, bins=10):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
-  pdf = gaussian_kde(data)
+  pdf = gaussian_kde.pdf(data)
   
   p = figure(plot_width=300, plot_height=300,
              tools='', background_fill_color="#fafafa")
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
           fill_color="navy", line_color="white", alpha=0.5)
   p.line(x, pdf, line_color="#ff8888", line_width=4, alpha=0.7)
-
+  
+  p.title = 'Model Variance'  
+    
   p.y_range.start = 0
   p.legend.location = "center_right"
   p.legend.background_fill_color = "#fefefe"
@@ -242,3 +244,4 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
          legend_name='Cross-validation score')
   show(p)
   return
+print("Finished loading andresML")
