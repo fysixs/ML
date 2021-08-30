@@ -3,8 +3,8 @@
 
 ''' IMPORTS '''
 
-!pip install pandas-bokeh
-!pip install --upgrade scikit-learn
+%shell pip install pandas-bokeh
+%shell pip install --upgrade scikit-learn
 
 import numpy as np
 import pandas as pd
