@@ -141,7 +141,7 @@ def plot_model_variance(estimator, data, scoring, bins, train=True):
     y = data.y_test
   scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
   
-  title = f"{type(estimator).__name__}'s {scoring} score variance"}
+  title = f"{type(estimator).__name__}'s {scoring} score variance"
   distplot(scores, bins=bins, title)
   return
 
