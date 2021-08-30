@@ -2,20 +2,39 @@
 #<--------- Andres Cardenas, 2021 ------>
 
 ''' IMPORTS '''
+# Basics
 import numpy as np
 import pandas as pd
 import pandas_bokeh
 import matplotlib.pyplot as plt
 
+# Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
 from bokeh.io import output_notebook
 from bokeh.models import TickFormatter
 
+# Classifiers
+from sklearn.tree import DecisionTreeClassifier
+
+# Model Selection / Pre-processing
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
+from sklearn.model_selection import cross_validate, cross_val_score
+from sklearn.model_selection import learning_curve
+
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingGridSearchCV
+from sklearn.model_selection import HalvingRandomSearchCV
+
+from scipy.stats import randint
+from scipy.stats.kde import gaussian_kde
+
+# metrics
+from sklearn import metrics
+
 output_notebook()
 pandas_bokeh.output_notebook()
 pd.set_option('plotting.backend', 'pandas_bokeh')
-
-from sklearn.model_selection import train_test_split
 
 ''' OOP '''
 class ModelData:
