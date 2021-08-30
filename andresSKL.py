@@ -32,10 +32,6 @@ from scipy.stats.kde import gaussian_kde
 # metrics
 from sklearn import metrics
 
-output_notebook()
-pandas_bokeh.output_notebook()
-pd.set_option('plotting.backend', 'pandas_bokeh')
-
 ''' OOP '''
 class ModelData:
   def __init__(self, raw_data, test_size=0.2):
