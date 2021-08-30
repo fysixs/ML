@@ -141,7 +141,7 @@ def plot_model_variance(estimator, data, scoring, bins, train=True):
     y = data.y_test
   scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
   
-  title = f"{type(estimator).__name__}'s {scoring} score variance"
+  title = f"{type(estimator).__name__}'s {scoring} variance"
   print(title)
   distplot(scores, title, bins=bins)
   return
@@ -174,12 +174,12 @@ def plot_feature_importance(estimator, data):
   return
 
 ''' Plotting Learning Curves '''
-def plot_learning_curves(estimator, train_num, data, cv):
+def plot_learning_curves(estimator, train_size, data, cv):
   (train_sizes, train_scores, 
    test_scores) = learning_curve(estimator,
                                  data.X_train, data.y_train,
                                  cv=cv, n_jobs=-1,
-                                 train_sizes=np.linspace(.1, 1.0, train_num))
+                                 train_sizes=np.linspace(.1, 1.0, train_size))
         
   data = {'train_scores_mean': np.mean(train_scores, axis=1),
           'train_scores_std' : np.std(train_scores, axis=1),
@@ -205,10 +205,10 @@ def plot_learning_curves(estimator, train_num, data, cv):
           fill_alpha=0.7, source=cds)
   
   p.line(x='train_sizes', y='train_scores_mean', source=cds, 
-         legend_name='Training score')
+         legend_label='Training score')
   
   p.line(x='train_sizes', y='test_scores_mean', source=cds, 
-         legend_name='Cross-validation score')
+         legend_label='Cross-validation score')
   
   show(p)
   return
@@ -249,10 +249,10 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
           fill_alpha=0.7, source=cds)
   
   p.line(x='param_range', y='train_scores_mean', source=cds, 
-         legend_name='Training score')
+         legend_label='Training score')
   
   p.line(x='param_range', y='test_scores_mean', source=cds, 
-         legend_name='Cross-validation score')
+         legend_label='Cross-validation score')
   show(p)
   return
 print("Finished loading andresML 🤓👌🏽")
