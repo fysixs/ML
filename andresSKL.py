@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 
 # Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
-from bokeh.io import output_notebook
 from bokeh.models import TickFormatter
 
 # Classifiers
