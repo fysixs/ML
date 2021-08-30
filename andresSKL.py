@@ -76,18 +76,18 @@ def crossval(estimator, data, cv):
   return
 
 ''' Hyperparameter Grid Search '''
-def hyper_grid_search(estimator, data, param_grid, cv):
+def hyper_grid_search(estimator, data, scoring, param_grid, cv):
   gridsearch = HalvingGridSearchCV(estimator=estimator, param_grid=param_grid, 
-                                 cv=cv, scoring='accuracy')
+                                 cv=cv, scoring=scoring)
   gridsearch.fit(data.X_train, data.y_train)
 
   return gridsearch.best_params_, pd.DataFrame(gridsearch.cv_results_)
 
 ''' Hyperparameter Random Search '''
-def hyper_randgrid_search(estimator, data, param_dist, cv):
+def hyper_randgrid_search(estimator, data, scoring, param_dist, cv):
   gridsearch = HalvingRandomSearchCV(estimator=estimator, 
                                      param_distributions=param_dist,
-                                     cv=cv, scoring='accuracy')
+                                     cv=cv, scoring=scoring)
   gridsearch.fit(data.X_train, data.y_train)
 
   return gridsearch.best_params_, pd.DataFrame(gridsearch.cv_results_)
