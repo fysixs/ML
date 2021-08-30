@@ -120,11 +120,9 @@ def distplot(data, bins=10):
   p.title = 'Model Variance'  
     
   p.y_range.start = 0
-  p.legend.location = "center_right"
-  p.legend.background_fill_color = "#fefefe"
   p.xaxis.axis_label = 'x'
   p.yaxis.axis_label = 'Pr(x)'
-  p.grid.grid_line_color="white"
+  p.grid.visible = False
   show(p)
   return
 
