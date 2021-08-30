@@ -18,7 +18,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.model_selection import cross_validate, cross_val_score
-from sklearn.model_selection import learning_curve
+from sklearn.model_selection import learning_curve, validation_curve
 
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
