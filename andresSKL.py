@@ -116,7 +116,8 @@ def distplot(data, title, bins=10):
              background_fill_color="#fafafa")
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
-  p.title = title  
+  p.title = title
+  p.title.text_font_size = "10px"
 
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
           fill_color="navy", line_color="white", alpha=0.5)
@@ -154,6 +155,7 @@ def plot_feature_importance(estimator, data):
 
   # Names points to data.keys()?
   # names = data.keys()
+  names   = data.raw_data.keys().tolist()
   f_names = [names[i] for i in indices]
 
   p = figure(plot_width=300, plot_height=300, tools='reset, box_zoom, hover')
