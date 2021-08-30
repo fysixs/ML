@@ -106,7 +106,7 @@ def model_score(params, data, clf):
 
 ''' -------- VISUALIZATION --------- '''
 ''' Plot Distributions '''
-def distplot(data, title, bins=10):
+def distplot(data, title_str, bins=10):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
@@ -116,7 +116,7 @@ def distplot(data, title, bins=10):
              background_fill_color="#fafafa")
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
-  p.title = title
+  p.title.text = title_str
   p.title.text_font_size = "10px"
 
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
@@ -143,7 +143,6 @@ def plot_model_variance(estimator, data, scoring, bins, train=True):
   scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
   
   title = f"{type(estimator).__name__}'s {scoring} variance"
-  print(title)
   distplot(scores, title, bins=bins)
   return
 
@@ -161,6 +160,9 @@ def plot_feature_importance(estimator, data):
   p = figure(plot_width=300, plot_height=300, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
+  
+  p.title.text = f'Feature importance \n {type(estimator).__name__}'
+  p.title.text_font_size = '10px'
 
   p.vbar(x=range(data.X_train.shape[1]),
          width=0.5, bottom=0, top=importances[indices])
@@ -199,6 +201,9 @@ def plot_learning_curves(estimator, train_size, data, cv):
   p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
+  
+  p.title.text = f'Learning curves \n {type(estimator).__name__}'
+  p.title.text_font_size = '10px'
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
           fill_alpha=0.7, source=cds)
@@ -243,6 +248,9 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
+  
+  p.title.text = f'Validation curves \n {type(estimator).__name__} with {scoring}'
+  p.title.text_font_size = '10px'
 
   p.varea(x='param_range', y1='train_scores_lower', y2='train_scores_upper',
           fill_alpha=0.7, source=cds)
