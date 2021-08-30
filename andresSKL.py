@@ -109,7 +109,7 @@ def model_score(params, data, clf):
 def distplot(data, bins=10):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
-  pdf = gaussian_kde.pdf(data)
+  pdf = gaussian_kde(x).pdf(data)
   
   p = figure(plot_width=300, plot_height=300,
              tools='', background_fill_color="#fafafa")
