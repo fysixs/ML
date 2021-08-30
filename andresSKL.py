@@ -112,17 +112,21 @@ def distplot(data, bins=10):
   pdf = gaussian_kde(data)
   
   p = figure(plot_width=300, plot_height=300,
-             tools='', background_fill_color="#fafafa")
+             tools='reset, box_zoom, hover', 
+             background_fill_color="#fafafa")
+  p.toolbar.autohide = True
+  p.hover.mode = 'vline'
+  p.title = 'Model Variance'  
+
   p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
           fill_color="navy", line_color="white", alpha=0.5)
   p.line(x, pdf(x), line_color="#ff8888", line_width=4, alpha=0.7)
-  
-  p.title = 'Model Variance'  
-    
+
   p.y_range.start = 0
   p.xaxis.axis_label = 'x'
   p.yaxis.axis_label = 'Pr(x)'
   p.grid.visible = False
+
   show(p)
   return
 
@@ -149,7 +153,9 @@ def plot_feature_importance(estimator, data):
   # names = data.keys()
   f_names = [names[i] for i in indices]
 
-  p = figure(plot_width=300, plot_height=300)
+  p = figure(plot_width=300, plot_height=300, tools='reset, box_zoom, hover')
+  p.toolbar.autohide = True
+  p.hover.mode = 'vline'
 
   p.vbar(x=range(data.X_train.shape[1]),
          width=0.5, bottom=0, top=importances[indices])
@@ -185,7 +191,9 @@ def plot_learning_curves(estimator, train_num, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=400, plot_height=400)
+  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
+  p.toolbar.autohide = True
+  p.hover.mode = 'vline'
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
           fill_alpha=0.7, source=cds)
@@ -227,7 +235,9 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=400, plot_height=400)
+  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
+  p.toolbar.autohide = True
+  p.hover.mode = 'vline'
 
   p.varea(x='param_range', y1='train_scores_lower', y2='train_scores_upper',
           fill_alpha=0.7, source=cds)
@@ -242,4 +252,4 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
          legend_name='Cross-validation score')
   show(p)
   return
-print("Finished loading andresML")
+print("Finished loading andresML 🤓👌🏽")
