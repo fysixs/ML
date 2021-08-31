@@ -118,8 +118,7 @@ def distplot(data, title_str, bins=10):
   pdf = gaussian_kde(data)
   
   p = figure(plot_width=300, plot_height=300,
-             tools='reset, box_zoom', 
-             background_fill_color="#fafafa")
+             tools='reset, box_zoom')
   p.toolbar.autohide = True
   p.title.text = title_str
   p.title.text_font_size = "10px"
