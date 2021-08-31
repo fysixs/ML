@@ -11,10 +11,7 @@ import matplotlib.pyplot as plt
 # Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
 from bokeh.models import Legend, HoverTool
-from bokeh.palettes import cividis
-
-# Classifiers
-from sklearn.tree import DecisionTreeClassifier
+from bokeh.palettes import viridis
 
 # Model Selection / Pre-processing
 from sklearn.model_selection import train_test_split
@@ -132,7 +129,7 @@ def distplot(data, title_str, bins=10):
                  alpha=0.5, source=cdsbar)
   p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
   
-  pdf_p = p.line(x='x', y='pdf', line_color=cividis(10)[-2], 
+  pdf_p = p.line(x='x', y='pdf', line_color=viridis(10)[-2], 
                  line_width=3, alpha=0.7, source=cdspdf)
   p.add_tools(HoverTool(renderers=[pdf_p], tooltips=TOOLTIPS_pdf, mode='vline'))
 
@@ -230,7 +227,7 @@ def plot_learning_curves(estimator, train_size, data, cv):
   p.title.text = f'Learning curves: {type(estimator).__name__}'
   p.title.text_font_size = '10px'
   
-  colors = cividis(10)
+  colors = viridis(10)
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
           fill_color=colors[1], fill_alpha=0.5, source=cds)
@@ -253,7 +250,7 @@ def plot_learning_curves(estimator, train_size, data, cv):
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
-                  location="center", label_text_font_size = '8pt')
+                  location="top", label_text_font_size = '8pt')
 
   p.add_layout(legend, 'right')
   p.legend.click_policy="hide"
@@ -292,7 +289,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   p.title.text = f'Validation curves for {param_dict["param_name"]} on {type(estimator).__name__} with {scoring}'
   p.title.text_font_size = '10px'
   
-  colors = cividis(10)
+  colors = viridis(10)
 
   p.varea(x='param_range', y1='train_scores_lower', y2='train_scores_upper',
           fill_color=colors[2], fill_alpha=0.7, source=cds)
@@ -315,7 +312,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
-                  location="center", label_text_font_size = '8pt')
+                  location="top", label_text_font_size = '8pt')
 
   p.add_layout(legend, 'right')
   p.legend.click_policy="hide"
