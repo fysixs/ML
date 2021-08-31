@@ -100,11 +100,10 @@ def hyper_randgrid_search(estimator, data, scoring, param_dist, cv):
   return gridsearch.best_params_, pd.DataFrame(gridsearch.cv_results_)
 
 ''' Final Score (Classifiers) '''
-def model_score(params, data, clf):
+def model_score(params, data, target_names, clf):
   clf.set_params(**params)
   clf.fit(data.X_train, data.y_train)
   y_pred = clf.predict(data.X_test)
-  target_names = ['SPAM', 'HAM'] # Modify for specific model
   print(metrics.classification_report(data.y_test,
                                       y_pred, target_names=target_names))
   return
