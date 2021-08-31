@@ -16,8 +16,6 @@ from bokeh.palettes import cividis
 from bokeh.io import curdoc
 from bokeh.themes import built_in_themes
 
-curdoc().theme = 'dark_minimal'
-
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
 
@@ -36,6 +34,8 @@ from scipy.stats.kde import gaussian_kde
 
 # metrics
 from sklearn import metrics
+
+curdoc().theme = 'dark_minimal'
 
 ''' OOP '''
 class ModelData:
@@ -125,17 +125,17 @@ def distplot(data, title_str, bins=10):
   p.title.text_font_size = "10px"
   
   TOOLTIPS_bar = [('Error', '@left'),
-                 ('Prob', '@hist')]
+                 ('Prob', '@prob')]
   TOOLTIPS_pdf = [('Error', '@x'),
                  ('Prob_PDF', '@pdf')]
   
-  cdsbar = ColumnDataSource(data={'top':hist,
+  cdsbar = ColumnDataSource(data={'prob':hist,
                                   'left':edges[:-1],
                                   'right':edges[1:]})
   cdspdf = ColumnDataSource(data={'x':x,
                                   'pdf':pdf(x)})
 
-  bar_p = p.quad(top='top', bottom=0, left='left', right='right',
+  bar_p = p.quad(top='prob', bottom=0, left='left', right='right',
           fill_color="navy", line_color="white", alpha=0.5, source=cdsbar)
   p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
   
@@ -290,7 +290,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
   p.toolbar.autohide = True
   
-  p.title.text = f'Validation curves \n {type(estimator).__name__} with {scoring}'
+  p.title.text = f'Validation curves for {param_dict['param_name']} on {type(estimator).__name__} with {scoring}'
   p.title.text_font_size = '10px'
   
   colors = cividis(10)
