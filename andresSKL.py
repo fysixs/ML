@@ -290,7 +290,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
   p.toolbar.autohide = True
   
-  p.title.text = f'Validation curves for {param_dict['param_name']} on {type(estimator).__name__} with {scoring}'
+  p.title.text = f'Validation curves for {param_dict["param_name"]} on {type(estimator).__name__} with {scoring}'
   p.title.text_font_size = '10px'
   
   colors = cividis(10)
