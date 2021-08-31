@@ -13,6 +13,11 @@ from bokeh.plotting import figure, show, ColumnDataSource
 from bokeh.models import Legend, HoverTool
 from bokeh.palettes import cividis
 
+from bokeh.io import curdoc
+from bokeh.themes import built_in_themes
+
+curdoc().theme = 'dark_minimal'
+
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
 
@@ -113,16 +118,30 @@ def distplot(data, title_str, bins=10):
   pdf = gaussian_kde(data)
   
   p = figure(plot_width=300, plot_height=300,
-             tools='reset, box_zoom, hover', 
+             tools='reset, box_zoom', 
              background_fill_color="#fafafa")
   p.toolbar.autohide = True
-  p.hover.mode = 'vline'
   p.title.text = title_str
   p.title.text_font_size = "10px"
+  
+  TOOLTIPS_bar = [('Error', '@left'),
+                 ('Prob', '@hist')]
+  TOOLTIPS_pdf = [('Error', '@x'),
+                 ('Prob_PDF', '@pdf')]
+  
+  cdsbar = ColumnDataSource(data={'top':hist,
+                                  'left':edges[:-1],
+                                  'right':edges[1:]})
+  cdspdf = ColumnDataSource(data={'x':x,
+                                  'pdf':pdf(x)})
 
-  p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
-          fill_color="navy", line_color="white", alpha=0.5)
-  p.line(x, pdf(x), line_color="#ff8888", line_width=4, alpha=0.7)
+  bar_p = p.quad(top='top', bottom=0, left='left', right='right',
+          fill_color="navy", line_color="white", alpha=0.5, source=cdsbar)
+  p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
+  
+  pdf_p = p.line(x='x', y='pdf', line_color="#ff8888", 
+                 line_width=4, alpha=0.7, source=cdspdf)
+  p.add_tools(HoverTool(renderers=[pdf_p], tooltips=TOOLTIPS_pdf, mode='vline'))
 
   p.y_range.start = 0
   p.xaxis.axis_label = 'x'
@@ -157,20 +176,26 @@ def plot_feature_importance(estimator, data):
   names   = data.raw_data.keys().tolist()
   f_names = [names[i] for i in indices]
 
-  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom, hover')
+  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
   p.toolbar.autohide = True
-  p.hover.mode = 'vline'
   
   p.title.text = f'Feature importance: {type(estimator).__name__}'
   p.title.text_font_size = '10px'
-
-  p.vbar(x=range(data.X_train.shape[1]),
-         width=0.5, bottom=0, top=importances[indices])
+  
+  TOOLTIPS_bar = [('Importance', '@Importance'),
+                 ('Feature', '@FeatureLabel')]
   
   label_dict = {}
   for i, s in enumerate(f_names):
     label_dict[i] = s
   
+  cds = ColumnDataSource(data={'Importance':importances[indices],
+                               'Feature':range(data.X_train.shape[1]),
+                               'FeatureLabel':f_names})
+
+  bar_p = p.vbar(x='Feature', width=0.5, bottom=0, top='Importance', source=cds)
+  p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
+
   p.xaxis.major_label_overrides = label_dict
   p.xaxis.major_label_orientation = np.pi/4
   p.xaxis.ticker = list(label_dict.keys())
@@ -213,9 +238,9 @@ def plot_learning_curves(estimator, train_size, data, cv):
   p.varea(x='train_sizes', y1='test_scores_lower', y2='test_scores_upper',
           fill_color=colors[3], fill_alpha=0.5, source=cds)
   
-  TOOLTIPS_tr = [('score', '@train_scores_mean'),
+  TOOLTIPS_tr = [('Train Score', '@train_scores_mean'),
                  ('#samples', '@train_sizes')]
-  TOOLTIPS_te = [('score', '@test_scores_mean'),
+  TOOLTIPS_te = [('Test Score', '@test_scores_mean'),
                  ('#samples', '@train_sizes')]
   
   tr_p = p.line(x='train_sizes', y='train_scores_mean', source=cds,
@@ -262,7 +287,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom')
+  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
   p.toolbar.autohide = True
   
   p.title.text = f'Validation curves \n {type(estimator).__name__} with {scoring}'
@@ -276,23 +301,24 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   p.varea(x='param_range', y1='test_scores_lower', y2='test_scores_upper',
           fill_color=colors[4], fill_alpha=0.7, source=cds)
   
-  TOOLTIPS_tr = [('score', '@train_scores_mean'),
+  TOOLTIPS_tr = [('Train Score', '@train_scores_mean'),
                  (f"{param_dict['param_name']}", '@param_range')]
-  TOOLTIPS_te = [('score', '@test_scores_mean'),
+  TOOLTIPS_te = [('Test Score', '@test_scores_mean'),
                  (f"{param_dict['param_name']}", '@param_range')]
   
   tr_p = p.line(x='param_range', y='train_scores_mean', source=cds, 
          line_color=colors[-3])
+  p.add_tools(HoverTool(renderers=[tr_p], tooltips=TOOLTIPS_tr, mode='vline'))
   
   te_p = p.line(x='param_range', y='test_scores_mean', source=cds, 
          line_color=colors[-4])
+  p.add_tools(HoverTool(renderers=[te_p], tooltips=TOOLTIPS_te, mode='vline'))
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
-                  location="center")
+                  location="center", label_text_font_size = '9pt')
 
   p.add_layout(legend, 'right')
-  p.legend.label_text_font_size = '9pt'
   p.legend.click_policy="hide"
   
   show(p)
