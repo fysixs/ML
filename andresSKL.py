@@ -104,10 +104,10 @@ def model_score(params, data, clf):
   clf.set_params(**params)
   clf.fit(data.X_train, data.y_train)
   y_pred = clf.predict(data.X_test)
-  target_names = [] # Modify for specific model
+  target_names = ['SPAM', 'HAM'] # Modify for specific model
   print(metrics.classification_report(data.y_test,
                                       y_pred, target_names=target_names))
-  return y_pred
+  return
 
 
 ''' -------- VISUALIZATION --------- '''
