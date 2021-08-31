@@ -117,7 +117,7 @@ def distplot(data, title_str, bins=10):
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
   
-  p = figure(plot_width=300, plot_height=300,
+  p = figure(plot_width=400, plot_height=400,
              tools='reset, box_zoom')
   p.toolbar.autohide = True
   p.title.text = title_str
@@ -135,11 +135,11 @@ def distplot(data, title_str, bins=10):
                                   'pdf':pdf(x)})
 
   bar_p = p.quad(top='prob', bottom=0, left='left', right='right',
-          fill_color="navy", line_color="white", alpha=0.5, source=cdsbar)
+                 alpha=0.5, source=cdsbar)
   p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
   
-  pdf_p = p.line(x='x', y='pdf', line_color="#ff8888", 
-                 line_width=4, alpha=0.7, source=cdspdf)
+  pdf_p = p.line(x='x', y='pdf', line_color=cividis(10)[-2], 
+                 line_width=3, alpha=0.7, source=cdspdf)
   p.add_tools(HoverTool(renderers=[pdf_p], tooltips=TOOLTIPS_pdf, mode='vline'))
 
   p.y_range.start = 0
@@ -252,10 +252,9 @@ def plot_learning_curves(estimator, train_size, data, cv):
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
-                  location="center")
+                  location="center", label_text_font_size = '8pt')
 
   p.add_layout(legend, 'right')
-  p.legend.label_text_font_size = '9pt'
   p.legend.click_policy="hide"
   
   show(p)
@@ -315,7 +314,7 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
-                  location="center", label_text_font_size = '9pt')
+                  location="center", label_text_font_size = '8pt')
 
   p.add_layout(legend, 'right')
   p.legend.click_policy="hide"
