@@ -13,9 +13,6 @@ from bokeh.plotting import figure, show, ColumnDataSource
 from bokeh.models import Legend, HoverTool
 from bokeh.palettes import cividis
 
-from bokeh.io import curdoc
-from bokeh.themes import built_in_themes
-
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
 
@@ -34,8 +31,6 @@ from scipy.stats.kde import gaussian_kde
 
 # metrics
 from sklearn import metrics
-
-curdoc().theme = 'dark_minimal'
 
 ''' OOP '''
 class ModelData:
@@ -160,7 +155,11 @@ def plot_model_variance(estimator, data, scoring, bins, train=True):
     y = data.y_test
   scores = cross_val_score(estimator, X, y, scoring=scoring, cv=sss_split)
   
-  title = f"{type(estimator).__name__}'s {scoring} variance"
+  if train:
+    title = f"{type(estimator).__name__}'s {scoring} variance"
+  else:
+    title = f"{type(estimator).__name__}'s {scoring} variance (ON TEST DATA)"
+
   distplot(scores, title, bins=bins)
   return
 
@@ -191,12 +190,15 @@ def plot_feature_importance(estimator, data):
                                'Feature':range(data.X_train.shape[1]),
                                'FeatureLabel':f_names})
 
-  bar_p = p.vbar(x='Feature', width=0.5, bottom=0, top='Importance', source=cds)
+  bar_p = p.vbar(x='Feature', width=1.0, bottom=0, top='Importance', source=cds)
   p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
 
   p.xaxis.major_label_overrides = label_dict
   p.xaxis.major_label_orientation = np.pi/4
   p.xaxis.ticker = list(label_dict.keys())
+  p.xaxis.major_label_text_font_size = "8pt"
+
+  p.grid.visible = False
 
   show(p)
   return
