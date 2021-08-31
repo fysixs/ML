@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 
 # Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
-from bokeh.models import Legend
+from bokeh.models import Legend, HoverTool
+from bokeh.palettes import cividis
 
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
@@ -156,7 +157,7 @@ def plot_feature_importance(estimator, data):
   names   = data.raw_data.keys().tolist()
   f_names = [names[i] for i in indices]
 
-  p = figure(plot_width=300, plot_height=600, tools='reset, box_zoom, hover')
+  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
   
@@ -169,7 +170,6 @@ def plot_feature_importance(estimator, data):
   label_dict = {}
   for i, s in enumerate(f_names):
     label_dict[i] = s
-  
   
   p.xaxis.major_label_overrides = label_dict
   p.xaxis.major_label_orientation = np.pi/4
@@ -199,28 +199,40 @@ def plot_learning_curves(estimator, train_size, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom, hover')
+  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
   p.toolbar.autohide = True
-  p.hover.mode = 'vline'
   
   p.title.text = f'Learning curves: {type(estimator).__name__}'
   p.title.text_font_size = '10px'
+  
+  colors = cividis(10)
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
-          fill_alpha=0.7, source=cds)
+          fill_color=colors[1], fill_alpha=0.5, source=cds)
   
   p.varea(x='train_sizes', y1='test_scores_lower', y2='test_scores_upper',
-          fill_alpha=0.7, source=cds)
+          fill_color=colors[3], fill_alpha=0.5, source=cds)
   
-  tr_p = p.line(x='train_sizes', y='train_scores_mean', source=cds)
+  TOOLTIPS_tr = [('score', '@train_scores_mean'),
+                 ('#samples', '@train_sizes')]
+  TOOLTIPS_te = [('score', '@test_scores_mean'),
+                 ('#samples', '@train_sizes')]
   
-  te_p = p.line(x='train_sizes', y='test_scores_mean', source=cds)
+  tr_p = p.line(x='train_sizes', y='train_scores_mean', source=cds,
+               line_color=colors[-1])
+  p.add_tools(HoverTool(renderers=[tr_p], tooltips=TOOLTIPS_tr, mode='vline'))
+  
+  te_p = p.line(x='train_sizes', y='test_scores_mean', source=cds,
+               line_color=colors[-2])
+  p.add_tools(HoverTool(renderers=[te_p], tooltips=TOOLTIPS_te, mode='vline'))
   
   legend = Legend(items=[('Training score'   , [tr_p]),
                          ('Cross-validation score' , [te_p])], 
                   location="center")
 
   p.add_layout(legend, 'right')
+  p.legend.label_text_font_size = '9pt'
+  p.legend.click_policy="hide"
   
   show(p)
   return
@@ -250,24 +262,40 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
+  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom')
   p.toolbar.autohide = True
-  p.hover.mode = 'vline'
   
   p.title.text = f'Validation curves \n {type(estimator).__name__} with {scoring}'
   p.title.text_font_size = '10px'
+  
+  colors = cividis(10)
 
   p.varea(x='param_range', y1='train_scores_lower', y2='train_scores_upper',
-          fill_alpha=0.7, source=cds)
+          fill_color=colors[2], fill_alpha=0.7, source=cds)
   
   p.varea(x='param_range', y1='test_scores_lower', y2='test_scores_upper',
-          fill_alpha=0.7, source=cds)
+          fill_color=colors[4], fill_alpha=0.7, source=cds)
   
-  p.line(x='param_range', y='train_scores_mean', source=cds, 
-         legend_label='Training score')
+  TOOLTIPS_tr = [('score', '@train_scores_mean'),
+                 (f"{param_dict['param_name']}", '@param_range')]
+  TOOLTIPS_te = [('score', '@test_scores_mean'),
+                 (f"{param_dict['param_name']}", '@param_range')]
   
-  p.line(x='param_range', y='test_scores_mean', source=cds, 
-         legend_label='Cross-validation score')
+  tr_p = p.line(x='param_range', y='train_scores_mean', source=cds, 
+         line_color=colors[-3])
+  
+  te_p = p.line(x='param_range', y='test_scores_mean', source=cds, 
+         line_color=colors[-4])
+  
+  legend = Legend(items=[('Training score'   , [tr_p]),
+                         ('Cross-validation score' , [te_p])], 
+                  location="center")
+
+  p.add_layout(legend, 'right')
+  p.legend.label_text_font_size = '9pt'
+  p.legend.click_policy="hide"
+  
   show(p)
   return
+
 print("Finished loading andresML 🤓👌🏽")
