@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 # Bokeh Plotting
 from bokeh.plotting import figure, show, ColumnDataSource
+from bokeh.models import Legend
 
 # Classifiers
 from sklearn.tree import DecisionTreeClassifier
@@ -152,15 +153,14 @@ def plot_feature_importance(estimator, data):
   indices = np.argsort(importances)[::-1]
 
   # Names points to data.keys()?
-  # names = data.keys()
   names   = data.raw_data.keys().tolist()
   f_names = [names[i] for i in indices]
 
-  p = figure(plot_width=300, plot_height=300, tools='reset, box_zoom, hover')
+  p = figure(plot_width=300, plot_height=600, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
   
-  p.title.text = f'Feature importance \n {type(estimator).__name__}'
+  p.title.text = f'Feature importance: {type(estimator).__name__}'
   p.title.text_font_size = '10px'
 
   p.vbar(x=range(data.X_train.shape[1]),
@@ -199,11 +199,11 @@ def plot_learning_curves(estimator, train_size, data, cv):
 
   cds = ColumnDataSource(data)
 
-  p = figure(plot_width=400, plot_height=400, tools='reset, box_zoom, hover')
+  p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom, hover')
   p.toolbar.autohide = True
   p.hover.mode = 'vline'
   
-  p.title.text = f'Learning curves \n {type(estimator).__name__}'
+  p.title.text = f'Learning curves: {type(estimator).__name__}'
   p.title.text_font_size = '10px'
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
@@ -212,11 +212,15 @@ def plot_learning_curves(estimator, train_size, data, cv):
   p.varea(x='train_sizes', y1='test_scores_lower', y2='test_scores_upper',
           fill_alpha=0.7, source=cds)
   
-  p.line(x='train_sizes', y='train_scores_mean', source=cds, 
-         legend_label='Training score')
+  tr_p = p.line(x='train_sizes', y='train_scores_mean', source=cds)
   
-  p.line(x='train_sizes', y='test_scores_mean', source=cds, 
-         legend_label='Cross-validation score')
+  te_p = p.line(x='train_sizes', y='test_scores_mean', source=cds)
+  
+  legend = Legend(items=[('Training score'   , [tr_p]),
+                         ('Cross-validation score' , [te_p])], 
+                  location="center")
+
+  p.add_layout(legend, 'right')
   
   show(p)
   return
