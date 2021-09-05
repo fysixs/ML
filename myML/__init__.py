@@ -183,7 +183,8 @@ def plot_feature_importance(estimator, data):
   indices = np.argsort(importances)[::-1]
 
   # Names points to data.keys()?
-  names   = data.raw_data.keys().tolist()
+  names   = data.raw_data.drop('label', axis=1).keys().tolist()
+  names   = [str(nm) for nm in names]
   f_names = [names[i] for i in indices]
 
   p = figure(plot_width=600, plot_height=300, tools='reset, box_zoom')
