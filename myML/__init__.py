@@ -28,12 +28,13 @@ from scipy.stats.kde import gaussian_kde
 
 # metrics
 from sklearn import metrics
-
+'''<------------------------------------->'''
 ''' OOP '''
 class ModelData:
   def __init__(self, raw_data, test_size=0.2):
     self.test_size = test_size
     self.raw_data  = raw_data
+    self.classes   = []
 
     datas = data_split(self.raw_data, self.test_size)
     self.X_train = datas[0]
@@ -41,14 +42,14 @@ class ModelData:
     self.y_train = datas[2]
     self.y_test  = datas[3]
 
-    def change_split(self,test_size):
-      self.test_size = test_size
-      datas = data_split(self.raw_data, self.test_size)
-      self.X_train = datas[0]
-      self.X_test  = datas[1]
-      self.y_train = datas[2]
-      self.y_test  = datas[3]
-        
+  def change_split(self, test_size):
+    self.test_size = test_size
+    datas = data_split(self.raw_data, self.test_size)
+    self.X_train = datas[0]
+    self.X_test  = datas[1]
+    self.y_train = datas[2]
+    self.y_test  = datas[3]
+'''<------------------------------------->'''
 ''' Data Pre-processing '''
 def data_split(raw_data, test_size):
   train_data, test_data = train_test_split(raw_data, 
@@ -59,20 +60,34 @@ def data_split(raw_data, test_size):
   y_train = train_data.label
   y_test  = test_data.label
   return X_train, X_test, y_train, y_test
-
+  '''<------------------------------------->'''
 ''' -------- METRICS --------- '''
-
 ''' Cross-Validation '''
 def crossval(estimator, data, cv):
   scoring = ['precision', 'recall', 'f1', 'accuracy']
-  scores = cross_validate(estimator,
-                          data.X_train, data.y_train,
-                          scoring=scoring, cv=cv)
-  print("Scores:")
-  for metric in scoring:
-    met_key = 'test_' + metric
-    print(f"{metric}: {scores[met_key].mean():.2f} accuracy with a standard deviation of {scores[met_key].std():.2f}\n")
-  return
+
+  if type(estimator).__name__ in ['XGBClassifier', 'LGBMClassifier']:
+    scores = []
+    for train_index, val_index in cv.split(data.X_train):
+      estimator.fit(data.X_train[train_index],
+                    data.y_train[train_index])
+      y_pred = estimator.predict(data.X_train[val_index]) 
+      score = metrics.classification_report(data.y_train[val_index],
+                                            y_pred,
+                                            output_dict = True,
+                                            target_names=data.classes)
+      scores.append(score)
+
+  else:
+    scores = cross_validate(estimator,
+                            data.X_train, data.y_train,
+                            scoring=scoring, cv=cv)
+    print("Scores:")
+    for metric in scoring:
+      met_key = 'test_' + metric
+      print(f"{metric}: {scores[met_key].mean():.2f} accuracy with a standard deviation of {scores[met_key].std():.2f}\n")
+  
+  return scores
 
 ''' Hyperparameter Grid Search '''
 def hyper_grid_search(estimator, data, scoring, param_grid, cv):
@@ -92,15 +107,15 @@ def hyper_randgrid_search(estimator, data, scoring, param_dist, cv):
   return gridsearch.best_params_, pd.DataFrame(gridsearch.cv_results_)
 
 ''' Final Score (Classifiers) '''
-def model_score(params, data, target_names, clf):
+def model_score(params, data, clf):
   clf.set_params(**params)
   clf.fit(data.X_train, data.y_train)
   y_pred = clf.predict(data.X_test)
+  target_names = data.classes
   print(metrics.classification_report(data.y_test,
                                       y_pred, target_names=target_names))
-  return
-
-
+  return y_pred
+'''<------------------------------------->'''
 ''' -------- VISUALIZATION --------- '''
 ''' Plot Distributions '''
 def distplot(data, title_str, bins=10):
@@ -187,7 +202,8 @@ def plot_feature_importance(estimator, data):
                                'Feature':range(data.X_train.shape[1]),
                                'FeatureLabel':f_names})
 
-  bar_p = p.vbar(x='Feature', width=1.0, bottom=0, top='Importance', source=cds)
+  bar_p = p.vbar(x='Feature', width=1.0, bottom=0, top='Importance', 
+                 fill_alpha = 0.7, source=cds)
   p.add_tools(HoverTool(renderers=[bar_p], tooltips=TOOLTIPS_bar, mode='vline'))
 
   p.xaxis.major_label_overrides = label_dict
@@ -230,22 +246,22 @@ def plot_learning_curves(estimator, train_size, data, cv):
   colors = viridis(10)
 
   p.varea(x='train_sizes', y1='train_scores_lower', y2='train_scores_upper',
-          fill_color=colors[1], fill_alpha=0.5, source=cds)
+          fill_color=colors[2], fill_alpha=0.5, source=cds)
   
   p.varea(x='train_sizes', y1='test_scores_lower', y2='test_scores_upper',
           fill_color=colors[3], fill_alpha=0.5, source=cds)
   
   TOOLTIPS_tr = [('Train Score', '@train_scores_mean'),
                  ('#samples', '@train_sizes')]
-  TOOLTIPS_te = [('Test Score', '@test_scores_mean'),
+  TOOLTIPS_te = [('CrossVal Score', '@test_scores_mean'),
                  ('#samples', '@train_sizes')]
   
   tr_p = p.line(x='train_sizes', y='train_scores_mean', source=cds,
-               line_color=colors[-1])
+               line_color=colors[-1], line_width=2)
   p.add_tools(HoverTool(renderers=[tr_p], tooltips=TOOLTIPS_tr, mode='vline'))
   
   te_p = p.line(x='train_sizes', y='test_scores_mean', source=cds,
-               line_color=colors[-2])
+               line_color=colors[-2], line_width=2)
   p.add_tools(HoverTool(renderers=[te_p], tooltips=TOOLTIPS_te, mode='vline'))
   
   legend = Legend(items=[('Training score'   , [tr_p]),
@@ -292,10 +308,10 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   colors = viridis(10)
 
   p.varea(x='param_range', y1='train_scores_lower', y2='train_scores_upper',
-          fill_color=colors[2], fill_alpha=0.7, source=cds)
+          fill_color=colors[2], fill_alpha=0.5, source=cds)
   
   p.varea(x='param_range', y1='test_scores_lower', y2='test_scores_upper',
-          fill_color=colors[4], fill_alpha=0.7, source=cds)
+          fill_color=colors[3], fill_alpha=0.5, source=cds)
   
   TOOLTIPS_tr = [('Train Score', '@train_scores_mean'),
                  (f"{param_dict['param_name']}", '@param_range')]
@@ -303,11 +319,11 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
                  (f"{param_dict['param_name']}", '@param_range')]
   
   tr_p = p.line(x='param_range', y='train_scores_mean', source=cds, 
-         line_color=colors[-3])
+         line_color=colors[-1], line_width=2)
   p.add_tools(HoverTool(renderers=[tr_p], tooltips=TOOLTIPS_tr, mode='vline'))
   
   te_p = p.line(x='param_range', y='test_scores_mean', source=cds, 
-         line_color=colors[-4])
+         line_color=colors[-2], line_width=2)
   p.add_tools(HoverTool(renderers=[te_p], tooltips=TOOLTIPS_te, mode='vline'))
   
   legend = Legend(items=[('Training score'   , [tr_p]),
@@ -319,5 +335,4 @@ def plot_val_curves(estimator, param_dict, scoring, data, cv):
   
   show(p)
   return
-
-print("Finished loading andresML 🤓👌🏽")
+'''<------------------------------------->'''
