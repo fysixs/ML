@@ -68,7 +68,7 @@ def crossval(estimator, data, scoring, cv):
 
   if type(estimator).__name__ in ['XGBClassifier', 'LGBMClassifier']:
     scores = []
-    for train_index, val_index in cv.split(data.X_train):
+    for train_index, val_index in cv.split(data.X_train, data.y_train):
       estimator.fit(data.X_train[train_index],
                     data.y_train[train_index], 
                     early_stopping_rounds = 15)
