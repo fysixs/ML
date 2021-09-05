@@ -69,11 +69,11 @@ def crossval(estimator, data, scoring, cv):
   if type(estimator).__name__ in ['XGBClassifier', 'LGBMClassifier']:
     scores = []
     for train_index, val_index in cv.split(data.X_train, data.y_train):
-      estimator.fit(data.X_train[train_index],
-                    data.y_train[train_index], 
+      estimator.fit(data.X_train.iloc[train_index],
+                    data.y_train.iloc[train_index], 
                     early_stopping_rounds = 15)
-      y_pred = estimator.predict(data.X_train[val_index]) 
-      score = metrics.classification_report(data.y_train[val_index],
+      y_pred = estimator.predict(data.X_train.iloc[val_index]) 
+      score = metrics.classification_report(data.y_train.iloc[val_index],
                                             y_pred,
                                             output_dict = True,
                                             target_names=data.classes)
