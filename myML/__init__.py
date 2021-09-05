@@ -159,7 +159,7 @@ def distplot(data, title_str, bins=15):
 
 ''' Model Variance '''
 def plot_model_variance(estimator, data, scoring, bins=15, train=True):
-  sss_split = StratifiedShuffleSplit(n_splits = 100 , test_size=0.75)
+  sss_split = StratifiedShuffleSplit(n_splits = 10 , test_size=0.75)
   if train==True:
     X = data.X_train
     y = data.y_train
