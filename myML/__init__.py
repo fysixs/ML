@@ -64,10 +64,10 @@ def data_split(raw_data, test_size):
 ''' -------- METRICS --------- '''
 ''' Cross-Validation '''
 def crossval(estimator, data, scoring, cv):
-  # scoring = ['precision', 'recall', 'f1', 'accuracy']
+  scoring = ['precision', 'recall', 'accuracy']
 
   if type(estimator).__name__ in ['XGBClassifier', 'LGBMClassifier']:
-    scores = []
+    scores = {'accuracy': [], 'recall': [], 'precision': [] }
     for train_index, val_index in cv.split(data.X_train, data.y_train):
       estimator.fit(data.X_train.iloc[train_index],
                     data.y_train.iloc[train_index],
@@ -79,8 +79,15 @@ def crossval(estimator, data, scoring, cv):
                                             y_pred,
                                             output_dict = True,
                                             target_names=data.classes)
-      scores.append(score)
+      scores['accuracy'].append(score['accuracy'])
+      scores['recall'].append(score['macro avg']['recall'])
+      scores['precision'].append(score['macro avg']['precision'])
+    scores['accuracy']  = np.array(scores['accuracy'])
+    scores['recall']    = np.array(scores['recall'])
+    scores['precision'] = np.array(scores['precision'])
 
+    for metric in scoring:
+      print(f"{metric}: {scores[metric].mean():.2f} mean with a standard deviation of {scores[metric].std():.2f}\n")
   else:
     scores = cross_validate(estimator,
                             data.X_train, data.y_train,
