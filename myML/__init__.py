@@ -63,8 +63,8 @@ def data_split(raw_data, test_size):
   '''<------------------------------------->'''
 ''' -------- METRICS --------- '''
 ''' Cross-Validation '''
-def crossval(estimator, data, cv):
-  scoring = ['precision', 'recall', 'f1', 'accuracy']
+def crossval(estimator, data, scoring, cv):
+  # scoring = ['precision', 'recall', 'f1', 'accuracy']
 
   if type(estimator).__name__ in ['XGBClassifier', 'LGBMClassifier']:
     scores = []
