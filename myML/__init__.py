@@ -73,7 +73,7 @@ def crossval(estimator, data, scoring, cv):
                     data.y_train.iloc[train_index],
                     eval_set = [(data.X_train.iloc[val_index],
                                  data.y_train.iloc[val_index])],
-                    early_stopping_rounds = 15)
+                    early_stopping_rounds = 15, verbose=0)
       y_pred = estimator.predict(data.X_train.iloc[val_index]) 
       score = metrics.classification_report(data.y_train.iloc[val_index],
                                             y_pred,
