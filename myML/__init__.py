@@ -119,7 +119,7 @@ def model_score(params, data, clf):
 '''<------------------------------------->'''
 ''' -------- VISUALIZATION --------- '''
 ''' Plot Distributions '''
-def distplot(data, title_str, bins=10):
+def distplot(data, title_str, bins=15):
   hist, edges = np.histogram(data, density=True, bins=bins)
   x = np.linspace(min(data), max(data), 200)
   pdf = gaussian_kde(data)
@@ -158,7 +158,7 @@ def distplot(data, title_str, bins=10):
   return
 
 ''' Model Variance '''
-def plot_model_variance(estimator, data, scoring, bins, train=True):
+def plot_model_variance(estimator, data, scoring, bins=15, train=True):
   sss_split = StratifiedShuffleSplit(n_splits = 100 , test_size=0.75)
   if train==True:
     X = data.X_train
